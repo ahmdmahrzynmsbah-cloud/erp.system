@@ -11,10 +11,10 @@ export default function Dashboard({ role, setActiveTab }: { role: UserRole, setA
   }, []);
 
   const kpis = [
-    { title: 'إجمالي المبيعات (اليوم)', value: '14,500', unit: 'ج.م', icon: 'trending_up', color: 'text-green-600', trend: '+12.5% عن أمس', showFor: ['Admin', 'Manager', 'Accountant'] },
-    { title: 'إجمالي المخزون', value: '3,240', unit: 'قطعة', icon: 'package_2', color: 'text-blue-600', trend: 'مستقر', showFor: ['Admin', 'Manager', 'Storekeeper'] },
-    { title: 'نواقص المخزون', value: '12', unit: 'صنف', icon: 'warning', color: 'text-red-400', trend: 'يتطلب إجراء فوري', showFor: ['Admin', 'Manager', 'Storekeeper'] },
-    { title: 'عملاء جدد', value: '8', unit: 'عملاء', icon: 'group', color: 'text-[#0ea5e9]', trend: '+2 عن الأسبوع الماضي', showFor: ['Admin', 'Manager'] },
+    { title: 'إجمالي المبيعات (اليوم)', value: '0', unit: 'ج.م', icon: 'trending_up', color: 'text-green-600', trend: 'لا توجد بيانات', showFor: ['Admin', 'Manager', 'Accountant'] },
+    { title: 'إجمالي المخزون', value: '0', unit: 'قطعة', icon: 'package_2', color: 'text-blue-600', trend: 'مستقر', showFor: ['Admin', 'Manager', 'Storekeeper'] },
+    { title: 'نواقص المخزون', value: '0', unit: 'صنف', icon: 'warning', color: 'text-red-400', trend: 'لا توجد نواقص', showFor: ['Admin', 'Manager', 'Storekeeper'] },
+    { title: 'عملاء جدد', value: '0', unit: 'عملاء', icon: 'group', color: 'text-[#0ea5e9]', trend: 'لا توجد بيانات', showFor: ['Admin', 'Manager'] },
   ];
 
   const visibleKpis = kpis.filter(kpi => kpi.showFor.includes(role));
@@ -57,11 +57,11 @@ export default function Dashboard({ role, setActiveTab }: { role: UserRole, setA
               <button onClick={() => toast.info('جاري إعداد تقرير المبيعات...')} className="text-[#0ea5e9] text-sm font-semibold hover:translate-x-1 transition-transform">عرض التقرير ←</button>
             </div>
             <div className="flex-1 p-6 flex items-end gap-4 border-b border-slate-100 pb-4 min-h-[250px]">
-              {[40, 70, 45, 90, 65, 80, 100].map((height, i) => (
+              {[0, 0, 0, 0, 0, 0, 0].map((height, i) => (
                 <div key={i} className="flex-1 flex flex-col items-center gap-2 group h-full justify-end">
                   <div 
                     className="w-full bg-slate-100 rounded-t-md relative group-hover:bg-[#0ea5e9] transition-all duration-300"
-                    style={{ height: `${height}%` }}
+                    style={{ height: `${height || 2}%` }}
                   >
                     <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-[#0f172a] text-white text-xs py-1 px-2 rounded whitespace-nowrap transition-all duration-300 transform group-hover:-translate-y-1 z-10 pointer-events-none">
                       {height * 100} ج.م
@@ -107,10 +107,10 @@ export default function Dashboard({ role, setActiveTab }: { role: UserRole, setA
                   تذكير الإدارة
                 </h3>
                 <p className="text-xs leading-relaxed opacity-70">
-                  هناك 4 فواتير لموردين تتجاوز فترة الائتمان اليوم. يرجى مراجعة مديونيات شركة "الكابلات المتحدة" لتفادي غرامات التأخير.
+                  لا توجد فواتير متأخرة حالياً. جميع الحسابات مستقرة.
                 </p>
                 <div className="mt-4 text-xs font-bold text-white bg-white/10 px-3 py-2 rounded-lg inline-block backdrop-blur-sm">
-                  إجمالي المتأخرات: 124,500 ج.م
+                  إجمالي المتأخرات: 0 ج.م
                 </div>
               </div>
               <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-[#0ea5e9] opacity-20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>

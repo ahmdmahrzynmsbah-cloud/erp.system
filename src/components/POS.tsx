@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { InventoryItem } from '../types';
 import { db } from '../lib/firebase';
 import { collection, getDocs, addDoc, setDoc, doc, updateDoc, increment, onSnapshot } from 'firebase/firestore';
+import { Html5QrcodeScanner } from 'html5-qrcode';
 
 interface CartItem extends InventoryItem {
   cartQuantity: number;
@@ -15,20 +16,55 @@ interface Client {
   balance: number;
 }
 
-const mockItems: InventoryItem[] = [
-  { id: '1', name: 'أسمنت بورتلاندي 50كجم', category: 'مواد بناء', sku: '#BLD-CEM-01', quantity: 450, unit: 'كيس', price: 18, minStock: 100 },
-  { id: '2', name: 'حديد تسليح 12مم', category: 'حديد وصلب', sku: '#STL-REB-12', quantity: 24, unit: 'طن', price: 2800, minStock: 10 },
-  { id: '3', name: 'دهان جوتن داخلي أبيض', category: 'دهانات', sku: '#PNT-JOT-IN', quantity: 85, unit: 'جالون', price: 120, minStock: 30 },
-  { id: '4', name: 'مواسير PVC 4 بوصة', category: 'سباكة', sku: '#PLB-PVC-04', quantity: 12, unit: 'قطعة', price: 45, minStock: 20 },
-  { id: '5', name: 'أسلاك كهرباء الفنار 4مم', category: 'كهرباء', sku: '#ELE-WIR-04', quantity: 150, unit: 'لفة', price: 110, minStock: 50 },
-];
+const mockItems: InventoryItem[] = [];
 
-const mockClients: Client[] = [
-  { id: 'C-001', name: 'مؤسسة إعمار الخليج', type: 'عميل - جملة', balance: -45000 },
-  { id: 'C-003', name: 'أحمد محمد', type: 'عميل - تجزئة', balance: -500 },
-];
+const mockClients: Client[] = [];
 
 let cachedPosProducts: InventoryItem[] | null = null;
+
+function BarcodeScannerComponent({ onScan, onClose }: { onScan: (code: string) => void, onClose: () => void }) {
+  useEffect(() => {
+    const scanner = new Html5QrcodeScanner(
+      "reader",
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      /* verbose= */ false
+    );
+
+    scanner.render(
+      (decodedText) => {
+        scanner.clear();
+        onScan(decodedText);
+      },
+      (error) => {
+        // Ignore scan errors as they happen constantly when no barcode is in view
+      }
+    );
+
+    return () => {
+      scanner.clear().catch(console.error);
+    };
+  }, [onScan]);
+
+  return (
+    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col">
+        <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+          <h2 className="font-bold text-[#0f172a] flex items-center gap-2">
+            <span className="material-symbols-outlined">barcode_scanner</span>
+            مسح باركود
+          </h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
+            <span className="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div className="p-4">
+          <div id="reader" className="w-full"></div>
+          <p className="text-center text-xs text-slate-500 mt-4">ضع الباركود أمام الكاميرا للمسح التلقائي</p>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function POS() {
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -38,6 +74,7 @@ export default function POS() {
   const [clientInput, setClientInput] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [invoiceModal, setInvoiceModal] = useState<{show: boolean, data: any}>({show: false, data: null});
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribeInventory = onSnapshot(collection(db, 'inventory'), (querySnapshot) => {
@@ -187,15 +224,36 @@ export default function POS() {
           <h1 className="text-xl font-bold text-[#0f172a]">نقطة البيع <span className="text-[#0ea5e9] font-normal">| كاشير 1</span></h1>
         </div>
         
-        <div className="relative shrink-0">
-          <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" style={{ fontSize: '20px' }}>search</span>
-          <input 
-            type="text" 
-            placeholder="ابحث عن منتج بالاسم أو الباركود..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="w-full pl-4 pr-12 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all text-slate-700 shadow-sm hover:shadow-md focus:shadow-md"
-          />
+        <div className="flex items-center gap-2 relative shrink-0">
+          <div className="relative flex-1">
+            <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" style={{ fontSize: '20px' }}>search</span>
+            <input 
+              type="text" 
+              placeholder="ابحث عن منتج بالاسم أو الباركود..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  const match = products.find(p => p.sku === searchTerm.trim());
+                  if (match) {
+                    addToCart(match);
+                    setSearchTerm('');
+                  } else if (filteredProducts.length === 1) {
+                    addToCart(filteredProducts[0]);
+                    setSearchTerm('');
+                  }
+                }
+              }}
+              className="w-full pl-4 pr-12 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all text-slate-700 shadow-sm hover:shadow-md focus:shadow-md"
+            />
+          </div>
+          <button 
+            onClick={() => setScannerOpen(true)}
+            className="bg-[#0ea5e9] text-white p-3 rounded-xl hover:bg-[#0284c7] transition-colors shadow-sm hover:shadow-md flex items-center justify-center shrink-0 group"
+            title="مسح باركود"
+          >
+            <span className="material-symbols-outlined group-hover:scale-110 transition-transform">barcode_scanner</span>
+          </button>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pb-4">
@@ -391,6 +449,23 @@ export default function POS() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Barcode Scanner Modal */}
+      {scannerOpen && (
+        <BarcodeScannerComponent 
+          onScan={(code) => {
+            const match = products.find(p => p.sku === code.trim());
+            if (match) {
+              addToCart(match);
+              toast.success(`تمت إضافة ${match.name}`);
+              setScannerOpen(false);
+            } else {
+              toast.error('لم يتم العثور على منتج بهذا الباركود');
+            }
+          }} 
+          onClose={() => setScannerOpen(false)} 
+        />
       )}
     </div>
   );

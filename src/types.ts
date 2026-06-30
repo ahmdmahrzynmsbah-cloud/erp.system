@@ -14,5 +14,6 @@ export interface InventoryItem {
   quantity: number;
   unit: string;
   price: number;
+  purchasePrice?: number;
   minStock: number;
 }

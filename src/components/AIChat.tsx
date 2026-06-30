@@ -13,7 +13,7 @@ export default function AIChat({ role }: { role: UserRole }) {
     {
       id: '1',
       role: 'ai',
-      text: 'مرحباً بك في مساعد الفارس الذكي. كيف يمكنني مساعدتك اليوم؟'
+      text: 'مرحباً بك في المساعد الذكي لسيستم POS. كيف يمكنني مساعدتك اليوم؟'
     }
   ]);
   const [input, setInput] = useState('');

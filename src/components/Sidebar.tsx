@@ -16,7 +16,7 @@ export default function Sidebar({ activeTab, setActiveTab, role }: SidebarProps)
     { id: 'sales', label: 'المبيعات', icon: 'shopping_cart', roles: ['Admin', 'Manager', 'Accountant', 'Cashier'] },
     { id: 'crm', label: 'العملاء والموردين', icon: 'group', roles: ['Admin', 'Manager', 'Accountant'] },
     { id: 'reports', label: 'التقارير', icon: 'description', roles: ['Admin', 'Manager', 'Accountant'] },
-    { id: 'ai', label: 'مساعد الفارس (AI)', icon: 'smart_toy', roles: ['Admin', 'Manager', 'Accountant', 'Cashier', 'Storekeeper'] },
+    { id: 'ai', label: 'المساعد الذكي (AI)', icon: 'smart_toy', roles: ['Admin', 'Manager', 'Accountant', 'Cashier', 'Storekeeper'] },
     { id: 'settings', label: 'الإعدادات', icon: 'settings', roles: ['Admin'] },
   ];
 
@@ -25,8 +25,7 @@ export default function Sidebar({ activeTab, setActiveTab, role }: SidebarProps)
   return (
     <aside className="w-72 bg-[#0f172a] text-white flex flex-col border-l border-slate-800 fixed right-0 top-0 h-screen transition-all duration-300">
       <div className="p-8">
-        <div className="text-2xl font-bold tracking-tighter text-[#0ea5e9]">نظام الفارس</div>
-        <div className="text-[10px] uppercase tracking-widest opacity-50 mt-1">حلول البنا نت &bull; الإصدار 2.1</div>
+        <div className="text-2xl font-bold tracking-tighter text-[#0ea5e9]">سيستم POS</div>
       </div>
       
       <nav className="flex-1 px-4 space-y-1 overflow-y-auto no-scrollbar">

@@ -81,7 +81,7 @@ export default function Login({ onLogin }: LoginProps) {
                 </span>
               </div>
               <div>
-                <h2 className="font-bold text-lg leading-tight">نظام الفارس</h2>
+                <h2 className="font-bold text-lg leading-tight">سيستم POS</h2>
                 <p className="text-[10px] text-cyan-200/80 uppercase tracking-widest font-medium">
                   ERP System
                 </p>
@@ -118,7 +118,7 @@ export default function Login({ onLogin }: LoginProps) {
               </div>
               <div>
                 <h2 className="font-bold text-xl text-slate-800">
-                  نظام الفارس
+                  سيستم POS
                 </h2>
                 <p className="text-xs text-slate-500 font-medium">
                   لإدارة التوريدات

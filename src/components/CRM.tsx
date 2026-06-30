@@ -12,11 +12,7 @@ interface Client {
   email: string;
 }
 
-const mockClients: Client[] = [
-  { id: 'C-001', name: 'مؤسسة إعمار الخليج', type: 'عميل - جملة', balance: -45000, phone: '0501234567', email: 'info@emaar.sa' },
-  { id: 'C-002', name: 'شركة البناء الحديث', type: 'مورد', balance: 12500, phone: '0559876543', email: 'contact@modernb.sa' },
-  { id: 'C-003', name: 'أحمد محمد', type: 'عميل - تجزئة', balance: -500, phone: '0500000001', email: 'ahmed@example.com' },
-];
+const mockClients: Client[] = [];
 
 export default function CRM() {
   const [clients, setClients] = useState<Client[]>(mockClients);
@@ -63,7 +59,7 @@ export default function CRM() {
         <div className="flex items-center gap-3">
           <button onClick={() => setIsAddModalOpen(true)} className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-lg shadow-blue-100 hover:shadow-none hover:-translate-y-0.5">
             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>person_add</span>
-            إضافة جهة اتصال
+            إضافة عميل أو مورد
           </button>
         </div>
       </div>
@@ -72,7 +68,7 @@ export default function CRM() {
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in-up">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
             <div className="p-6 border-b border-slate-100 flex items-center justify-between shrink-0">
-              <h2 className="text-lg font-bold text-[#0f172a]">إضافة جهة اتصال جديدة</h2>
+              <h2 className="text-lg font-bold text-[#0f172a]">إضافة عميل أو مورد جديد</h2>
               <button onClick={() => setIsAddModalOpen(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
                 <span className="material-symbols-outlined">close</span>
               </button>
@@ -109,7 +105,7 @@ export default function CRM() {
                 const email = (document.getElementById('clientEmail') as HTMLInputElement).value;
                 
                 if (!name || !type) {
-                  toast.error('الرجاء إدخال اسم ونوع جهة الاتصال');
+                  toast.error('الرجاء إدخال اسم ونوع العميل أو المورد');
                   return;
                 }
                 
@@ -121,12 +117,12 @@ export default function CRM() {
                   const { doc, setDoc } = await import('firebase/firestore');
                   await setDoc(doc(db, 'clients', id), client);
                   setClients([client, ...clients]);
-                  toast.success('تم إنشاء جهة الاتصال بنجاح');
+                  toast.success('تم إنشاء العميل أو المورد بنجاح');
                   setIsAddModalOpen(false);
                 } catch(e) {
                   toast.error('حدث خطأ أثناء الحفظ');
                 }
-              }} className="px-4 py-2 bg-[#0ea5e9] text-white rounded-xl hover:bg-[#0284c7] font-bold text-sm shadow-md transition-all">حفظ جهة الاتصال</button>
+              }} className="px-4 py-2 bg-[#0ea5e9] text-white rounded-xl hover:bg-[#0284c7] font-bold text-sm shadow-md transition-all">حفظ</button>
             </div>
           </div>
         </div>

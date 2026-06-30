@@ -12,10 +12,7 @@ interface Sale {
   method: string;
 }
 
-const mockSales = [
-  { id: 'INV-10023', date: '2026-05-24', client: 'مؤسسة إعمار الخليج', total: 15400, status: 'مدفوع', method: 'نقدي' },
-  { id: 'INV-10024', date: '2026-05-24', client: 'شركة البناء الحديث', total: 3200, status: 'آجل', method: 'آجل (30 يوم)' },
-];
+const mockSales: Sale[] = [];
 
 export default function Sales() {
   const [sales, setSales] = useState<Sale[]>(mockSales);
